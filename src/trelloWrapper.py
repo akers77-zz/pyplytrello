@@ -38,7 +38,6 @@ def addMetaDataTrelloPlaylist(trelloPlaylist):
             song["artist"], song["title"] = databaseUtils.convertURIToMetadata(song["spotifyId"])
 
 def clearList(listID):
-    print trello.lists.get_card(listID)
     for card in trello.lists.get_card(listID):
         trello.cards.delete(card['id'])
 
@@ -63,7 +62,6 @@ while True:
     spotifyIds = databaseUtils.getCurrentPlaylistURIs(PARTY_ID)
     for i, spotifyID in enumerate(spotifyIds):
         if not playlistDict.has_key(spotifyID):
-            print "Adding song"
             song = {"spotifyId": spotifyID, "order": i, "title": "", "artist": "", "trelloId": ""}
             song["artist"], song["title"] = databaseUtils.convertURIToMetadata(song["spotifyId"])
             resp = trello.cards.new("{} by {}".format(song["title"], song["artist"]), LIST_ID)
@@ -74,7 +72,6 @@ while True:
         if playlistDict.has_key(spotifyID):
             song = playlistDict.get(spotifyID)
             if song["order"] != i:
-                print "Moving song"
                 updateCardPosition(song["trelloId"], i)
                 song["order"] = i
     sleep(5)
