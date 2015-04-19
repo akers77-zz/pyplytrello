@@ -19,20 +19,23 @@ class DatabaseUtils:
 
         return spotifyURIs
 
+    def convertURIToMetadata(self, spotifyURI):
+        artist = ""
+        title = ""
+        r = requests.get('{}{}{}{}'.format(BASE_URL,ECHONEST_API_KEY,POST_URL,spotifyURI))
+        if r.status_code == 200:
+            response = r.json()['response']
+            if response['songs']:
+                artist = response['songs'][0]['artist_name']
+                title = response['songs'][0]['title']
+        return artist, title
+
     def convertURIsToMetadataString(self, spotifyURIs):
-        stringArray = []
-
+        songStrings = []
         for uri in spotifyURIs:
-            r = requests.get('{}{}{}{}'.format(BASE_URL,ECHONEST_API_KEY,POST_URL,uri))
-            if r.status_code == 200:
-                response = r.json()['response']
-                if response['songs']:
-                    songs = response['songs']
-                    artist = songs[0]['artist_name']
-                    title = songs[0]['title']
-                    stringArray.append(title + " by " + artist)
-
-        return stringArray
+            artist, title = self.convertURIToMetadata(uri)
+            songStrings.append(title + " by " + artist)
+        return songStrings
 
 #db = DatabaseUtils()
 #uris = db.getCurrentPlaylistURIs("1234")
